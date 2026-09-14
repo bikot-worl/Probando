@@ -1,0 +1,38 @@
+name: Generar Páginas de Dibujos
+
+on:
+  push:
+    paths:
+      - 'dibujos.json'
+  workflow_dispatch:
+
+jobs:
+  build-and-commit:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Ejecutar script de generación
+        run: python newfile.py
+
+      - name: Hacer commit y push de las páginas generadas
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add draw/
+          if git diff --staged --quiet; then
+            echo "No hay cambios para guardar."
+          else
+            git commit -m "bot: Actualización automática de páginas en draw/"
+            git push
+          fi
