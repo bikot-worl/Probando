@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animación Gatosaurio OC - Fix Pro</title>
+<style>
+  body {
+    background-color: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Arial Black', Gadget, sans-serif;
+  }
+
+  .contenedor-principal {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .logo-img {
+    height: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+  }
+
+  #gato {
+    width: 60vw;
+    max-width: 450px;
+    min-width: 300px;
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(-90deg) scale(0.1);
+    z-index: 1;
+  }
+
+  #gato.visible { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+
+  #logo-oc {
+    width: 90vw; 
+    max-width: 580px;
+    min-width: 450px;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 2;
+  }
+
+  .area-texto {
+    position: absolute;
+    top: 72%; 
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .texto-base {
+    color: #EA7900;
+    font-size: clamp(20px, 7vw, 90px); 
+    font-weight: 900;
+    white-space: nowrap;
+    text-shadow: none;
+    position: absolute;
+    transition: opacity 0.3s ease;
+  }
+
+  #texto-animado {
+    display: inline-flex;
+    opacity: 0;
+  }
+
+  #prefijo-oc {
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    display: inline-block;
+  }
+
+  #texto-fijo {
+    opacity: 0;
+  }
+
+  .fase-link #texto-animado { opacity: 1; }
+
+  .fase-final #gato { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+  .fase-final #logo-oc { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+
+  .fase-final #prefijo-oc {
+    width: 1.2em;
+    opacity: 1;
+    margin-right: 0.1em;
+  }
+
+  .fase-reemplazo #texto-animado { opacity: 0; }
+  .fase-reemplazo #texto-fijo { opacity: 1; }
+
+  @media (max-width: 600px) {
+    .fase-final .texto-base, .fase-reemplazo .texto-base { transform: scale(0.85); }
+  }
+</style>
+</head>
+<body>
+
+<div class="contenedor-principal">
+  <img src="gato.png" id="gato" class="logo-img" alt="Gato">
+  <img src="oc.png" id="logo-oc" class="logo-img" alt="Logo OC">
+
+  <div class="area-texto">
+    <div id="texto-animado" class="texto-base">
+      <span id="prefijo-oc">Oc.</span>
+      <span>GatosauriocrackWorl.com</span>
+    </div>
+
+    <div id="texto-fijo" class="texto-base">
+      Oc.GatosauriocrackWorl.com
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const body = document.body;
+    const gato = document.getElementById('gato');
+
+    setTimeout(() => gato.classList.add('visible'), 500);
+    setTimeout(() => body.classList.add('fase-link'), 1800);
+    setTimeout(() => body.classList.add('fase-final'), 3500);
+    setTimeout(() => body.classList.add('fase-reemplazo'), 4100);
+  });
+</script>
+
+</body>
+</html>
