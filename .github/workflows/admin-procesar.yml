@@ -1,0 +1,97 @@
+name: Actualizar dibujos
+on:
+  repository_dispatch:
+    types: [procesar_imagen, excluir_imagen]
+
+# ---> AQUÍ ESTÁ LA COLA: Controla que se ejecuten uno por uno en orden
+concurrency:
+  group: actualizar-dibujos-queue
+  cancel-in-progress: false
+
+jobs:
+  update_json:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Trae todo el historial para que el pull/rebase funcione bien
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Procesar Datos
+        env:
+          EVENT_TYPE: ${{ github.event.action }}
+          NUEVO_DIBUJO: ${{ toJson(github.event.client_payload.nuevoDibujo) }}
+        run: |
+          python -c "
+          import json, os
+          event = os.environ['EVENT_TYPE']
+          payload = json.loads(os.environ['NUEVO_DIBUJO'])
+          def leer(n):
+              if os.path.exists(n):
+                  try:
+                      with open(n, 'r', encoding='utf-8') as f:
+                          data = json.load(f)
+                          return data if isinstance(data, list) else []
+                  except: return []
+              return []
+          def get_u(f):
+              if isinstance(f, list): return set(filter(None, f))
+              return {f} if f else set()
+          def normalizar(item):
+              if not isinstance(item, dict): return item
+              res = item.copy()
+              for k in ['fileURL', 'description', 'timestamp', 'tags']:
+                  val = res.get(k, [])
+                  res[k] = val if isinstance(val, list) else [val]
+              return res
+          
+          dibujos = leer('dibujos.json')
+          pendientes = leer('pendientes.json')
+          excluidos = leer('No.json')
+          urls_nuevas = get_u(payload.get('fileURL'))
+          
+          if event == 'procesar_imagen':
+              tags_finales = set(payload.get('tags', []))
+              for p in pendientes:
+                  if p and (get_u(p.get('fileURL')) & urls_nuevas):
+                      tags_existentes = p.get('tags', [])
+                      if isinstance(tags_existentes, list): tags_finales.update(tags_existentes)
+                      else: tags_finales.add(tags_existentes)
+              payload['tags'] = list(tags_finales)
+              dibujos = [d for d in dibujos if d and not (get_u(d.get('fileURL')) & urls_nuevas)]
+              dibujos.insert(0, normalizar(payload))
+          
+          elif event == 'excluir_imagen':
+              excluidos = [e for e in excluidos if e and not (get_u(e.get('fileURL')) & urls_nuevas)]
+              excluidos.insert(0, normalizar(payload))
+          
+          pendientes = [p for p in pendientes if p and not (get_u(p.get('fileURL')) & urls_nuevas)]
+          
+          with open('dibujos.json', 'w', encoding='utf-8') as f:
+              json.dump(dibujos, f, indent=2, ensure_ascii=False)
+          with open('pendientes.json', 'w', encoding='utf-8') as f:
+              json.dump(pendientes, f, indent=2, ensure_ascii=False)
+          with open('No.json', 'w', encoding='utf-8') as f:
+              json.dump(excluidos, f, indent=2, ensure_ascii=False)
+          "
+
+      - name: Guardar en Repo
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "Meli Admin Bot"
+          git add dibujos.json pendientes.json No.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Admin: Actualizacion de registros (${{ github.event.action }})"
+            # ---> REBASE ANTES DEL PUSH: Asegura traer lo que el proceso anterior guardó
+            git pull --rebase origin main
+            git push origin main
+          else
+            echo "No hay cambios"
+          fi

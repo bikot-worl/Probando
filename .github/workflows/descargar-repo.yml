@@ -1,0 +1,28 @@
+name: Descargar Repositorio ZIP
+
+on:
+  workflow_dispatch: # Permite la activación manual desde la interfaz de GitHub
+
+jobs:
+  download-zip:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Asegura que se descargue todo el historial si es necesario
+
+      - name: Crear archivo ZIP
+        run: |
+          # Empaqueta todo el contenido actual del repositorio.
+          # Se excluye la carpeta .git para evitar archivos innecesarios del historial interno.
+          zip -r repositorio_completo.zip . -x "*.git*"
+
+      - name: Subir Archivo como Artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: copia-repositorio-zip
+          path: repositorio_completo.zip
+          retention-days: 1 # El archivo estará disponible para descargar durante 1 día

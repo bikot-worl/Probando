@@ -1,0 +1,88 @@
+name: Actualizar Galeria
+
+on:
+  push:
+    paths:
+      - 'Imagenes/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Gestionar Archivos
+        run: |
+          python -c "
+          import os, json, datetime
+          def leer(n):
+              if os.path.exists(n):
+                  try:
+                      with open(n, 'r', encoding='utf-8') as f:
+                          data = json.load(f)
+                          return data if isinstance(data, list) else []
+                  except: return []
+              return []
+          
+          def obtener_urls(lista):
+              urls = set()
+              for item in lista:
+                  if not isinstance(item, dict): continue
+                  furl = item.get('fileURL', [])
+                  if isinstance(furl, list):
+                      for u in furl:
+                          if isinstance(u, str): urls.add(u)
+                  elif isinstance(furl, str):
+                      urls.add(furl)
+              return urls
+
+          gal = leer('dibujos.json')
+          pen = leer('pendientes.json')
+          excluidas = leer('No.json')
+          
+          ext = obtener_urls(gal) | obtener_urls(pen) | obtener_urls(excluidas)
+          new = []
+          
+          folder = 'Imagenes'
+          if os.path.exists(folder):
+              for r, d, files in os.walk(folder):
+                  for f in files:
+                      if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.mp4', '.webm')):
+                          p = os.path.join(r, f).replace(os.sep, '/')
+                          if p not in ext:
+                              new.append({
+                                  'fileURL': [p],
+                                  'description': ['Nueva imagen detectada'],
+                                  'tags': ['%Gatosauriocrack%'],
+                                  'timestamp': [datetime.datetime.now().isoformat() + 'Z'],
+                                  'status': 'waiting'
+                              })
+          
+          if new:
+              pen.extend(new)
+              with open('pendientes.json', 'w', encoding='utf-8') as f:
+                  json.dump(pen, f, indent=2, ensure_ascii=False)
+          "
+
+      - name: Guardar en GitHub
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add pendientes.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Bot: Nuevas imágenes detectadas"
+            git push
+          else
+            echo "No hay cambios"
+          fi

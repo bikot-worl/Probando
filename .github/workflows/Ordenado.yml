@@ -1,0 +1,130 @@
+name: Limpieza y Corrección de Galería
+on:
+  workflow_dispatch:
+
+jobs:
+  clean_and_fix:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Procesar Carpetas, Ortografía y Etiquetas
+        run: |
+          python -c "
+          import json
+          import os
+          import re
+
+          mapa_carpetas = {
+              'Imagenes/Liminal': 'Imagenes/Espacios_Liminales',
+          }
+
+          for vieja, nueva in mapa_carpetas.items():
+              if os.path.exists(vieja):
+                  os.rename(vieja, nueva)
+                  print(f'Carpeta renombrada: {vieja} -> {nueva}')
+
+          diccionario_espanol = {
+              'hise': 'hice',
+              'vice': 'hice',
+              'namas': 'nomás',
+              'comes': 'nomás',
+              'imajen': 'imagen',
+              'imajenes': 'imágenes',
+              'vidoe': 'video',
+              'baner': 'banner',
+              'neuro': 'nuevo',
+              'personage': 'personaje',
+              'fanoart': 'fanart',
+              'Apart': 'fanart',
+              'complete': 'completa',
+              'perspective': 'perspectiva',
+              'rope': 'ropa',
+              'place': 'pelaje',
+              'care': 'cara',
+              'sofa': 'hoja',
+              'reference': 'referencia',
+              'intento': 'nintendo',
+              'intend': 'nintendo',
+              'altar': 'avatar',
+              'sorry': 'korra'
+          }
+
+          def corregir_texto(texto):
+              if not texto: return texto
+              for mal, bien in diccionario_espanol.items():
+                  texto = re.sub(rf'\b{mal}\b', bien, texto, flags=re.IGNORECASE)
+                  texto = re.sub(rf'\b{mal.capitalize()}\b', bien.capitalize(), texto)
+              return texto
+
+          def ordenar_tags(tags_lista):
+              artistas = []
+              colaboraciones = []
+              ocs = []
+              especiales = []
+
+              for tag in tags_lista:
+                  tag_clean = tag.strip()
+                  if tag_clean.startswith('%') or 'gatosauro' in tag_clean.lower():
+                      artistas.append(tag_clean)
+                  elif tag_clean.startswith('@') or tag_clean.endswith('_') or tag_clean.lower() == 'aslan':
+                      colaboraciones.append(tag_clean)
+                  elif tag_clean.startswith('$') or tag_clean in ['Ebiko', 'Haku', 'Axie', 'Mizzy', 'Nelle', 'Gawr Gura'] or 'bikot' in tag_clean.lower():
+                      ocs.append(tag_clean)
+                  else:
+                      especiales.append(tag_clean)
+
+              return artistas + colaboraciones + ocs + especiales
+
+          if os.path.exists('dibujos.json'):
+              with open('dibujos.json', 'r', encoding='utf-8') as f:
+                  dibujos = json.load(f)
+
+              for d in dibujos:
+                  if 'description' in d:
+                      if isinstance(d['description'], list):
+                          d['description'] = [corregir_texto(desc) for desc in d['description']]
+                      else:
+                          d['description'] = corregir_texto(d['description'])
+
+                  if 'tags' in d:
+                      d['tags'] = ordenar_tags(d['tags'])
+
+                  if 'fileURL' in d:
+                      def actualizar_path(p):
+                          for vieja, nueva in mapa_carpetas.items():
+                              if p.startswith(vieja):
+                                  return p.replace(vieja, nueva, 1)
+                          return p
+
+                      if isinstance(d['fileURL'], list):
+                          d['fileURL'] = [actualizar_path(p) for p in d['fileURL']]
+                      else:
+                          d['fileURL'] = actualizar_path(d['fileURL'])
+
+              with open('dibujos.json', 'w', encoding='utf-8') as f:
+                  json.dump(dibujos, f, ensure_ascii=False, indent=2)
+              print('dibujos.json procesado de forma segura.')
+          "
+
+      - name: Guardar y subir cambios a GitHub
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "Gatosaurio Auto-Corrector"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Bot: Ortografía corregida en español, carpetas limpias y tags ordenados"
+            git push origin main
+          else
+            echo "No se encontraron errores que corregir."
+          fi
