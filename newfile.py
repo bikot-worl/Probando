@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import shutil
 
 def generar_paginas_dibujos():
     html_template_path = 'plantilla.html'
@@ -15,6 +16,8 @@ def generar_paginas_dibujos():
         print(f"Error: No se encontró el archivo '{json_path}'.")
         return
 
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)
     os.makedirs(output_dir, exist_ok=True)
 
     with open(html_template_path, 'r', encoding='utf-8') as f:
@@ -28,15 +31,11 @@ def generar_paginas_dibujos():
 
     total_elementos = len(dibujos_data)
     generados = 0
-    actualizados = 0
 
     for index, item in enumerate(dibujos_data):
         numero_publicacion = total_elementos - index
         output_file_name = f"publicacion_{numero_publicacion}.html"
         output_file_path = os.path.join(output_dir, output_file_name)
-
-        # Detectar si el archivo ya existe para registrar el conteo correcto
-        es_actualizacion = os.path.exists(output_file_path)
 
         if "fileURL" in item:
             if isinstance(item["fileURL"], list):
@@ -54,18 +53,13 @@ def generar_paginas_dibujos():
 
         updated_html = updated_html.replace("Imagenes/", "../draws/")
 
-        # Abre el archivo en modo 'w' (escritura), lo que sobrescribe el contenido anterior
         with open(output_file_path, 'w', encoding='utf-8') as f:
             f.write(updated_html)
 
-        if es_actualizacion:
-            print(f"Actualizado: {output_file_path}")
-            actualizados += 1
-        else:
-            print(f"Generado: {output_file_path}")
-            generados += 1
+        print(f"Generado: {output_file_path}")
+        generados += 1
 
-    print(f"\n¡Proceso completado! Se generaron {generados} archivos nuevos y se actualizaron {actualizados} existentes en '{output_dir}/'.")
+    print(f"\n¡Proceso completado! Se generaron {generados} archivos en '{output_dir}/'.")
 
 if __name__ == '__main__':
     generar_paginas_dibujos()
