@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — Gatosauriocrack</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --naranja: #EA7900;
+            --naranja-claro: #ffb86c;
+            --naranja-dim: #CC6600;
+            --fondo: #282c34;
+            --panel: #2e323c;
+            --input-bg: #1e2129;
+            --texto: #d0d0d0;
+            --texto-dim: #5a6070;
+            --borde: #383d48;
+            --radius: 6px;
+            --radius-lg: 10px;
+            --t: 0.17s ease;
+            --glow: 0 0 16px rgba(234,121,0,0.3);
+        }
+
+        @font-face {
+            font-family: 'FontAwesome-Gatosauriocrack';
+            src: url('fonts/FontAwesome-Gatosauriocrack.ttf') format('truetype');
+        }
+        [class^="icon-"], [class*=" icon-"] {
+            font-family: 'FontAwesome-Gatosauriocrack' !important;
+            speak: never; font-style: normal; font-weight: normal;
+            font-variant: normal; text-transform: none; line-height: 1;
+            -webkit-font-smoothing: antialiased;
+        }
+        .icon-meli-icono:before { content: "\e900"; font-size: 80px; color: #000; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--fondo); color: var(--texto);
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--borde); border-radius: 4px; }
+
+        .header-bar {
+            width: 100%; height: 58px;
+            background: var(--naranja);
+            display: flex; align-items: center;
+            padding: 0 18px; position: fixed;
+            top: 0; z-index: 4000; gap: 14px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+        }
+        .header-bar h2 {
+            font-size: 1.05rem; font-weight: 700;
+            letter-spacing: 0.3px; color: #000;
+        }
+
+        .admin-container { padding: 78px 20px 60px; max-width: 1040px; margin: auto; }
+
+        .section-label {
+            font-size: 0.65rem; text-transform: uppercase;
+            letter-spacing: 2.5px; color: var(--texto-dim);
+            margin-bottom: 14px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .section-label::after {
+            content: ''; flex: 1; height: 1px; background: var(--borde);
+        }
+
+        .pending-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+            gap: 8px; margin-bottom: 30px;
+        }
+
+        .img-option {
+            aspect-ratio: 1; border-radius: var(--radius);
+            cursor: pointer; overflow: hidden;
+            background: #1a1d24;
+            border: 2px solid transparent;
+            position: relative;
+            transition: transform var(--t), border-color var(--t);
+        }
+        .img-option:hover { border-color: rgba(234,121,0,0.4); transform: scale(1.02); }
+        .img-option img, .img-option video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .img-option.selected { border-color: var(--naranja-claro); transform: scale(0.94); }
+        .img-option.selected .check-badge { opacity: 1; transform: scale(1); }
+
+        .check-badge {
+            position: absolute; top: 5px; right: 5px;
+            background: var(--naranja); color: #fff;
+            border-radius: 50%; width: 20px; height: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 700;
+            opacity: 0; transform: scale(0.4);
+            transition: opacity var(--t), transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+        }
+
+        .empty-state {
+            grid-column: 1/-1; text-align: center;
+            padding: 60px 20px; color: var(--texto-dim); font-size: 0.9rem;
+            display: flex; flex-direction: column; align-items: center; gap: 12px;
+        }
+        .empty-state i { font-size: 1.8rem; opacity: 0.25; }
+
+        #btnOpenEditor {
+            position: fixed; bottom: 22px; right: 22px;
+            background: var(--naranja); color: #fff; border: none;
+            padding: 11px 20px; border-radius: 50px;
+            cursor: pointer; font-weight: 700; font-size: 0.88rem;
+            box-shadow: var(--glow); z-index: 4500; display: none;
+            transition: transform var(--t), box-shadow var(--t);
+            align-items: center; gap: 8px;
+            animation: popIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        #btnOpenEditor:hover { transform: translateY(-2px); box-shadow: 0 0 22px rgba(234,121,0,0.55); }
+        @keyframes popIn {
+            from { transform: scale(0.6); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+
+        .editor-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(12,14,18,0.93);
+            z-index: 5000; overflow-y: auto;
+            animation: fadeIn 0.16s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .view-container {
+            width: 100%; max-width: 1000px;
+            margin: 44px auto 40px; padding: 0 16px;
+            display: flex; flex-direction: column; gap: 14px;
+        }
+
+        .view-media {
+            border-radius: var(--radius-lg); overflow: hidden;
+            background: #0c0e12; flex: 2; position: relative;
+        }
+        .media-slide {
+            width: 100%; display: flex;
+            justify-content: center; align-items: center; min-height: 320px;
+        }
+        .media-slide img, .media-slide video {
+            max-width: 100%; max-height: 68vh; object-fit: contain;
+        }
+        .media-counter {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(0,0,0,0.5); color: #aaa;
+            font-size: 0.72rem; padding: 3px 10px; border-radius: 20px;
+            backdrop-filter: blur(6px); letter-spacing: 0.5px;
+        }
+        .nav-dots {
+            position: absolute; bottom: 46px; width: 100%;
+            display: flex; justify-content: center; gap: 5px;
+        }
+        .nav-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: rgba(255,255,255,0.18); cursor: pointer;
+            transition: background var(--t), transform var(--t);
+        }
+        .nav-dot.active { background: var(--naranja-claro); transform: scale(1.4); }
+        .media-nav {
+            position: absolute; bottom: 10px; width: 100%;
+            display: flex; justify-content: center; gap: 8px;
+        }
+
+        .view-info {
+            background: var(--panel); padding: 20px;
+            border-radius: var(--radius-lg); flex: 1;
+            display: flex; flex-direction: column; gap: 2px;
+            border: 1px solid var(--borde);
+        }
+
+        .field-label {
+            font-size: 0.62rem; text-transform: uppercase;
+            letter-spacing: 2.2px; color: var(--texto-dim);
+            margin-top: 16px; margin-bottom: 6px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .field-label:first-child { margin-top: 0; }
+        .field-label i { font-size: 0.68rem; }
+
+        .desc-wrapper { position: relative; }
+
+        .view-description {
+            background: var(--input-bg);
+            border: 1px solid var(--borde);
+            color: var(--texto); font-size: 0.93rem;
+            padding: 11px 13px 32px; border-radius: var(--radius);
+            width: 100%; resize: none; font-family: inherit;
+            outline: none; line-height: 1.65;
+            transition: border-color var(--t), box-shadow var(--t);
+        }
+        .view-description:focus {
+            border-color: var(--naranja);
+            box-shadow: 0 0 0 2px rgba(234,121,0,0.1);
+        }
+        .view-description::placeholder { color: #3e4250; font-style: italic; }
+
+        .char-counter {
+            position: absolute; bottom: 9px; right: 11px;
+            font-size: 0.67rem; color: var(--texto-dim);
+            pointer-events: none; transition: color var(--t);
+            font-variant-numeric: tabular-nums;
+        }
+        .char-counter.warn { color: var(--naranja-claro); }
+
+        .desc-hint {
+            font-size: 0.68rem; color: var(--texto-dim);
+            margin-top: 5px; display: flex; align-items: center; gap: 5px;
+        }
+        .desc-hint i { font-size: 0.62rem; }
+
+        .mention-box {
+            position: absolute; top: calc(100% + 4px); left: 0;
+            background: #1a1d24;
+            border: 1px solid rgba(234,121,0,0.5);
+            border-radius: var(--radius); display: none;
+            z-index: 6000; max-height: 170px;
+            overflow-y: auto; width: 220px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.6);
+        }
+        .mention-item {
+            padding: 8px 12px; cursor: pointer;
+            border-bottom: 1px solid #22252e;
+            font-size: 0.86rem; display: flex; align-items: center; gap: 8px;
+            transition: background var(--t);
+        }
+        .mention-item i { color: var(--naranja-claro); font-size: 0.7rem; flex-shrink: 0; }
+        .mention-item:hover { background: rgba(234,121,0,0.12); }
+        .mention-item:last-child { border-bottom: none; }
+
+        .tag-list {
+            display: flex; flex-wrap: wrap;
+            gap: 5px; min-height: 28px; padding: 1px 0;
+        }
+        .tag-item {
+            padding: 4px 10px 4px 11px;
+            border-radius: 4px;
+            font-size: 0.68em; font-weight: 700;
+            color: #fff; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px;
+            text-transform: uppercase; letter-spacing: 0.8px;
+            transition: opacity var(--t), transform var(--t);
+            user-select: none;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .tag-item:hover { opacity: 0.85; transform: scale(0.96); }
+        .tag-remove { font-size: 0.6em; opacity: 0.8; display: flex; align-items: center; }
+
+        .tag-oc      { background: #b45f06; border: 1.5px solid #ff9900; }
+        .tag-artista { background: #990000; border: 1.5px solid #ff4d4d; }
+        .tag-colab   { background: #274e13; border: 1.5px solid #6aa84f; }
+        .tag-blue    { background: #0b5394; border: 1.5px solid #3d85c6; }
+
+        .divider { height: 1px; background: var(--borde); margin: 12px 0; }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 7px; padding: 9px 15px; border-radius: var(--radius);
+            cursor: pointer; font-size: 0.84rem; font-weight: 600;
+            border: none; transition: background var(--t), transform var(--t), opacity var(--t);
+            letter-spacing: 0.2px; white-space: nowrap;
+        }
+        .btn i { font-size: 0.82em; }
+
+        .btn-ghost {
+            background: #3d424d;
+            border: 1px solid #5a6070; color: #fff;
+        }
+        .btn-ghost:hover { background: #4e5461; }
+
+        .btn-dashed {
+            background: rgba(234,121,0,0.1);
+            border: 1.5px dashed var(--naranja); color: var(--naranja-claro); width: 100%;
+        }
+        .btn-dashed:hover {
+            background: rgba(234,121,0,0.2);
+        }
+
+        .btn-primary {
+            background: #ff8c00; color: #000; width: 100%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: #ffa500; transform: translateY(-1px);
+        }
+        .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+        .btn-danger {
+            background: #660000;
+            border: 1px solid #ff4d4d; color: #ffcccc; width: 100%;
+        }
+        .btn-danger:hover { background: #800000; }
+
+        .btn-nav {
+            background: #444;
+            border: 1px solid #666; color: #fff;
+            padding: 7px 14px; font-size: 0.82rem;
+        }
+
+        .btn-actions { display: flex; flex-direction: column; gap: 7px; margin-top: auto; padding-top: 16px; }
+
+        .selector-modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.88);
+            z-index: 7000; align-items: center; justify-content: center;
+            animation: fadeIn 0.14s ease;
+        }
+        .modal-content {
+            background: var(--panel); padding: 22px;
+            border-radius: var(--radius-lg);
+            width: 95%; max-width: 350px;
+            border: 1px solid var(--borde);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+            animation: slideUp 0.22s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes slideUp {
+            from { transform: translateY(22px) scale(0.96); opacity: 0; }
+            to   { transform: translateY(0)    scale(1);    opacity: 1; }
+        }
+        .modal-title {
+            font-size: 0.62rem; text-transform: uppercase;
+            letter-spacing: 2.2px; color: #fff;
+            margin-bottom: 14px; display: flex; align-items: center; gap: 7px;
+        }
+
+        .cat-btn {
+            width: 100%; padding: 12px 13px; margin-bottom: 7px;
+            border-radius: var(--radius); cursor: pointer;
+            font-weight: 700; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 10px;
+            transition: filter var(--t), transform var(--t);
+            color: #fff; border: none;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .cat-btn:hover { filter: brightness(1.2); transform: translateX(3px); }
+        .cat-btn i { width: 14px; text-align: center; font-size: 0.9rem; }
+        .cat-btn.cat-oc      { background: #b45f06; border: 2px solid #ff9900; }
+        .cat-btn.cat-artista { background: #990000; border: 2px solid #ff4d4d; }
+        .cat-btn.cat-colab   { background: #274e13; border: 2px solid #6aa84f; }
+        .cat-btn.cat-blue    { background: #0b5394; border: 2px solid #3d85c6; }
+
+        .search-wrap { position: relative; margin-bottom: 8px; }
+        .search-wrap i {
+            position: absolute; left: 10px; top: 50%;
+            transform: translateY(-50%); color: var(--texto-dim);
+            font-size: 0.76rem; pointer-events: none;
+        }
+        .list-search {
+            width: 100%; padding: 10px 12px 10px 30px;
+            background: var(--input-bg);
+            border: 2px solid var(--borde);
+            border-radius: var(--radius); color: #fff;
+            font-size: 0.9rem; outline: none;
+        }
+        .list-search:focus { border-color: var(--naranja); }
+
+        .list-items { max-height: 250px; overflow-y: auto; }
+        .list-item-btn {
+            width: 100%; padding: 10px 11px; margin-bottom: 4px;
+            border-radius: var(--radius); cursor: pointer;
+            font-size: 0.9rem; text-align: left;
+            background: #383d48;
+            border: 1px solid #4e5461; color: #fff;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .list-item-btn:hover { background: #4e5461; border-color: var(--naranja-claro); }
+
+        .toast {
+            position: fixed; bottom: 72px; left: 50%;
+            transform: translateX(-50%) translateY(12px);
+            background: var(--panel);
+            border: 2px solid var(--borde); color: var(--texto);
+            padding: 10px 20px; border-radius: 30px;
+            font-size: 0.85rem; font-weight: 700;
+            z-index: 9999; opacity: 0;
+            transition: opacity 0.22s ease, transform 0.22s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.ok  { border-color: #2ecc71; color: #2ecc71; background: #1a3a2a; }
+        .toast.err { border-color: #e74c3c; color: #e74c3c; background: #3a1a1a; }
+
+        .spinner {
+            display: inline-block; width: 13px; height: 13px;
+            border: 2px solid rgba(0,0,0,0.2);
+            border-top-color: #000; border-radius: 50%;
+            animation: spin 0.65s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (min-width: 900px) {
+            .view-container { flex-direction: row; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header-bar">
+    <i class="icon-meli-icono"></i>
+    <h2>Administrador</h2>
+</header>
+
+<div class="admin-container">
+    <p class="section-label">Pendientes de publicar</p>
+    <div class="pending-grid" id="pendingGrid">
+        <div class="empty-state">
+            <i class="fa-regular fa-image"></i>
+            Cargando...
+        </div>
+    </div>
+</div>
+
+<button id="btnOpenEditor" onclick="abrirEditor()">
+    <i class="fa-solid fa-pen-to-square"></i>
+    Configurar &nbsp;<span id="count">0</span>
+</button>
+
+<div id="editor" class="editor-overlay">
+    <div class="view-container">
+        <div class="view-media">
+            <div class="media-slide" id="mediaPreview"></div>
+            <div class="media-counter" id="mediaCounter"></div>
+            <div class="nav-dots" id="navDots"></div>
+            <div class="media-nav">
+                <button class="btn btn-nav" onclick="move(-1)">
+                    <i class="fa-solid fa-chevron-left"></i> Anterior
+                </button>
+                <button class="btn btn-nav" onclick="move(1)">
+                    Siguiente <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="view-info">
+            <p class="field-label"><i class="fa-regular fa-pen-to-square"></i> Descripcion</p>
+            <div class="desc-wrapper">
+                <textarea id="mainDesc" class="view-description" rows="5"
+                    placeholder="Escribe una descripcion... usa @ para mencionar a alguien"
+                    oninput="checkAt(event); updateCharCount()"
+                    maxlength="500"></textarea>
+                <span class="char-counter" id="charCounter">0 / 500</span>
+                <div id="mentions" class="mention-box"></div>
+            </div>
+            <p class="desc-hint">
+                <i class="fa-solid fa-at"></i>
+                Escribe @ seguido de un nombre para mencionar
+            </p>
+
+            <div class="divider"></div>
+
+            <p class="field-label"><i class="fa-solid fa-tags"></i> Etiquetas</p>
+            <div class="tag-list" id="tagList"></div>
+            <button class="btn btn-dashed" style="margin-top:10px;" onclick="openTypeSelector()">
+                <i class="fa-solid fa-plus-circle"></i> Agregar etiqueta
+            </button>
+
+            <div class="btn-actions">
+                <button id="btnPublicar" class="btn btn-primary" onclick="publicar()">
+                    <i class="fa-solid fa-paper-plane"></i> Publicar ahora
+                </button>
+                <button class="btn btn-danger" onclick="cerrarEditor()">
+                    <i class="fa-solid fa-trash"></i> Cancelar todo
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="typeSelector" class="selector-modal">
+    <div class="modal-content">
+        <p class="modal-title"><i class="fa-solid fa-tag"></i> Tipo de etiqueta</p>
+        <button class="cat-btn cat-oc"      onclick="selectCategory('oc')">
+            <i class="fa-solid fa-star"></i> OC — Personaje
+        </button>
+        <button class="cat-btn cat-artista" onclick="selectCategory('artista')">
+            <i class="fa-solid fa-paintbrush"></i> Artista
+        </button>
+        <button class="cat-btn cat-colab"   onclick="selectCategory('colab')">
+            <i class="fa-solid fa-handshake"></i> Colaboracion
+        </button>
+        <button class="cat-btn cat-blue"    onclick="selectCategory('especial')">
+            <i class="fa-solid fa-bolt"></i> Especial
+        </button>
+        <div class="divider"></div>
+        <button class="btn btn-ghost" style="width:100%;" onclick="closeAllModals()">
+            <i class="fa-solid fa-xmark"></i> Salir
+        </button>
+    </div>
+</div>
+
+<div id="listSelector" class="selector-modal">
+    <div class="modal-content">
+        <p class="modal-title" id="listTitle">
+            <i class="fa-solid fa-list"></i> Seleccionar
+        </p>
+        
+        <div class="search-wrap" id="wrapBuscador">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input class="list-search" id="listSearch" type="text"
+                placeholder="Buscar..." oninput="filterList()" autocomplete="off" />
+        </div>
+
+        <div id="wrapInputManual" style="display:none; margin-bottom:15px;">
+            <input class="list-search" id="manualInput" type="text" 
+                   placeholder="Escribe el nombre..." style="padding-left:12px;"
+                   onkeydown="if(event.key==='Enter') confirmarManual()">
+            <button class="btn btn-primary" style="margin-top:10px;" onclick="confirmarManual()">
+                <i class="fa-solid fa-check"></i> Confirmar nombre
+            </button>
+        </div>
+
+        <div class="list-items" id="listItems"></div>
+        
+        <div class="divider"></div>
+        <button class="btn btn-ghost" style="width:100%;" onclick="backToCategories()">
+            <i class="fa-solid fa-arrow-left"></i> Regresar a lista
+        </button>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    let seleccionadas = [], OCS = [], ARROBAS = [], etiquetasFinales = [], carIndex = 0;
+    let currentListArr = [], currentListCss = '', tempCss = '';
+    let pendientesOriginales = [];
+
+    function showToast(html, type = '', duration = 2800) {
+        const t = document.getElementById('toast');
+        t.innerHTML = html;
+        t.className = 'toast show' + (type ? ' ' + type : '');
+        clearTimeout(t._t);
+        t._t = setTimeout(() => t.classList.remove('show'), duration);
+    }
+
+    function updateCharCount() {
+        const len = document.getElementById('mainDesc').value.length;
+        const cc = document.getElementById('charCounter');
+        cc.textContent = `${len} / 500`;
+        cc.classList.toggle('warn', len > 420);
+    }
+
+    async function init() {
+        try {
+            const [r1, r2, r3] = await Promise.all([
+                fetch('pendientes.json').then(r => r.json()),
+                fetch('NameOC.json').then(r => r.json()),
+                fetch('arroba.json').then(r => r.json())
+            ]);
+            pendientesOriginales = r1;
+            OCS = r2; ARROBAS = r3;
+            renderGrid(r1);
+        } catch(e) {
+            document.getElementById('pendingGrid').innerHTML =
+                '<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i>Error al cargar.</div>';
+        }
+    }
+
+    function renderGrid(items) {
+        const grid = document.getElementById('pendingGrid');
+        grid.innerHTML = '';
+        if (!items.length) {
+            grid.innerHTML = '<div class="empty-state"><i class="fa-regular fa-circle-check"></i>Sin pendientes</div>';
+            return;
+        }
+        items.forEach(p => {
+            const url = Array.isArray(p.fileURL) ? p.fileURL[0] : p.fileURL;
+            const div = document.createElement('div');
+            div.className = 'img-option';
+            div.innerHTML = (isVideo(url)
+                ? `<video src="${url}" muted preload="metadata"></video>`
+                : `<img src="${url}" loading="lazy">`)
+                + `<div class="check-badge"><i class="fa-solid fa-check"></i></div>`;
+            div.onclick = () => toggleSelect(div, url);
+            grid.appendChild(div);
+        });
+    }
+
+    function toggleSelect(div, url) {
+        const idx = seleccionadas.indexOf(url);
+        if (idx === -1) { seleccionadas.push(url); div.classList.add('selected'); }
+        else { seleccionadas.splice(idx, 1); div.classList.remove('selected'); }
+        const btn = document.getElementById('btnOpenEditor');
+        btn.style.display = seleccionadas.length ? 'inline-flex' : 'none';
+        document.getElementById('count').textContent = seleccionadas.length;
+    }
+
+    function checkAt(e) {
+        const val = e.target.value;
+        const last = val.split(' ').pop();
+        const box = document.getElementById('mentions');
+        if (last.startsWith('@') && last.length > 1) {
+            const q = last.slice(1).toLowerCase();
+            const matches = Object.keys(ARROBAS).filter(a => a.toLowerCase().includes(q)).slice(0, 8);
+            box.innerHTML = '';
+            matches.forEach(m => {
+                const d = document.createElement('div');
+                d.className = 'mention-item';
+                d.innerHTML = `<i class="fa-solid fa-at"></i>${m}`;
+                d.onclick = () => {
+                    const words = val.split(' '); words.pop();
+                    e.target.value = words.join(' ') + (words.length ? ' ' : '') + m + ' ';
+                    box.style.display = 'none'; e.target.focus(); updateCharCount();
+                };
+                box.appendChild(d);
+            });
+            box.style.display = matches.length ? 'block' : 'none';
+        } else { box.style.display = 'none'; }
+    }
+
+    function openTypeSelector() { document.getElementById('typeSelector').style.display = 'flex'; }
+
+    function selectCategory(cat) {
+        document.getElementById('typeSelector').style.display = 'none';
+        const buscador = document.getElementById('wrapBuscador');
+        const manual = document.getElementById('wrapInputManual');
+        const inputM = document.getElementById('manualInput');
+        const lista = document.getElementById('listItems');
+
+        inputM.value = '';
+        lista.innerHTML = '';
+
+        if (cat === 'oc') {
+            currentListArr = OCS; 
+            currentListCss = 'tag-oc';
+            buscador.style.display = 'block';
+            manual.style.display = 'none';
+            renderListModal('Seleccionar OC');
+        } else {
+            const map = { artista:'tag-artista', colab:'tag-colab', especial:'tag-blue' };
+            const titulos = { artista:'Nombre Artista', colab:'Colaborador', especial:'Especial' };
+            tempCss = map[cat];
+            document.getElementById('listTitle').innerHTML = `<i class="fa-solid fa-pen"></i> ${titulos[cat]}`;
+            buscador.style.display = 'none';
+            manual.style.display = 'block';
+            document.getElementById('listSelector').style.display = 'flex';
+            setTimeout(() => inputM.focus(), 100);
+        }
+    }
+
+    function confirmarManual() {
+        const nombre = document.getElementById('manualInput').value.trim();
+        if (nombre) { addTag(nombre, tempCss); closeAllModals(); }
+    }
+
+    function renderListModal(title) {
+        document.getElementById('listTitle').innerHTML = `<i class="fa-solid fa-list"></i> ${title}`;
+        document.getElementById('listSearch').value = '';
+        renderListItems(currentListArr);
+        document.getElementById('listSelector').style.display = 'flex';
+        setTimeout(() => document.getElementById('listSearch').focus(), 100);
+    }
+
+    function filterList() {
+        const q = document.getElementById('listSearch').value.toLowerCase();
+        renderListItems(currentListArr.filter(i => i.toLowerCase().includes(q)));
+    }
+
+    function renderListItems(arr) {
+        const c = document.getElementById('listItems');
+        c.innerHTML = '';
+        if (!arr.length) {
+            c.innerHTML = '<p class="list-empty">Sin resultados</p>';
+            return;
+        }
+        arr.forEach(item => {
+            const b = document.createElement('button');
+            b.className = 'list-item-btn';
+            b.innerHTML = `<i class="fa-regular fa-circle-dot"></i>${item}`;
+            b.onclick = () => { addTag(item, currentListCss); closeAllModals(); };
+            c.appendChild(b);
+        });
+    }
+
+    function addTag(name, css) {
+        if (etiquetasFinales.some(t => t.name === name)) {
+            showToast(`<i class="fa-solid fa-info-circle"></i> "${name}" ya esta en la lista`);
+            return;
+        }
+        etiquetasFinales.push({ name, css }); renderTags();
+    }
+
+    function renderTags() {
+        const box = document.getElementById('tagList');
+        box.innerHTML = '';
+        etiquetasFinales.forEach(t => {
+            const s = document.createElement('span');
+            s.className = `tag-item ${t.css}`;
+            s.innerHTML = `${t.name}<span class="tag-remove"><i class="fa-solid fa-circle-xmark"></i></span>`;
+            s.onclick = () => { etiquetasFinales = etiquetasFinales.filter(x => x.name !== t.name); renderTags(); };
+            box.appendChild(s);
+        });
+    }
+
+    function backToCategories() {
+        document.getElementById('listSelector').style.display = 'none';
+        document.getElementById('typeSelector').style.display = 'flex';
+    }
+
+    function closeAllModals() {
+        document.querySelectorAll('.selector-modal').forEach(m => m.style.display = 'none');
+    }
+
+    function abrirEditor() {
+        carIndex = 0; 
+        detectarEtiquetasExistentes();
+        updatePreview();
+        document.getElementById('editor').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function detectarEtiquetasExistentes() {
+        let tagsEncontrados = new Set();
+        seleccionadas.forEach(url => {
+            const item = pendientesOriginales.find(p => (Array.isArray(p.fileURL) ? p.fileURL[0] : p.fileURL) === url);
+            if (item && item.tags) {
+                const itemTags = Array.isArray(item.tags) ? item.tags : [item.tags];
+                itemTags.forEach(t => tagsEncontrados.add(t));
+            }
+        });
+
+        tagsEncontrados.forEach(tag => {
+            let nombre = tag, css = 'tag-blue';
+            if (tag.startsWith('%') && tag.endsWith('%')) {
+                nombre = tag.replace(/%/g, '');
+                css = 'tag-artista';
+            } else if (tag.endsWith('_')) {
+                nombre = tag.slice(0, -1);
+                css = 'tag-colab';
+            } else if (tag.startsWith('$')) {
+                nombre = tag.slice(1);
+                css = 'tag-blue';
+            } else {
+                css = 'tag-oc';
+            }
+            addTag(nombre, css);
+        });
+    }
+
+    function updatePreview() {
+        const url = seleccionadas[carIndex];
+        const box = document.getElementById('mediaPreview');
+        box.innerHTML = isVideo(url)
+            ? `<video src="${url}" autoplay loop muted playsinline></video>`
+            : `<img src="${url}" alt="Preview">`;
+        document.getElementById('mediaCounter').textContent =
+            seleccionadas.length > 1 ? `${carIndex + 1} / ${seleccionadas.length}` : '';
+        const dots = document.getElementById('navDots');
+        dots.innerHTML = '';
+        if (seleccionadas.length > 1) {
+            seleccionadas.forEach((_, i) => {
+                const d = document.createElement('div');
+                d.className = 'nav-dot' + (i === carIndex ? ' active' : '');
+                d.onclick = () => { carIndex = i; updatePreview(); };
+                dots.appendChild(d);
+            });
+        }
+    }
+
+    function move(n) {
+        carIndex = (carIndex + n + seleccionadas.length) % seleccionadas.length;
+        updatePreview();
+    }
+
+    function cerrarEditor() {
+        document.getElementById('editor').style.display = 'none';
+        document.body.style.overflow = '';
+        etiquetasFinales = [];
+        renderTags();
+    }
+
+    function isVideo(url) { return /\.(mp4|webm)$/i.test(url); }
+
+    async function publicar() {
+        const token = localStorage.getItem('github_token') || prompt('GitHub Token:');
+        if (!token) return;
+        localStorage.setItem('github_token', token);
+
+        const btn = document.getElementById('btnPublicar');
+        btn.innerHTML = '<span class="spinner"></span> Publicando...';
+        btn.disabled = true;
+
+        const tagsRaw = etiquetasFinales.map(t => {
+            if (t.css === 'tag-artista') return `%${t.name}%`;
+            if (t.css === 'tag-colab')   return `${t.name}_`;
+            if (t.css === 'tag-blue')    return `$${t.name}`;
+            return t.name;
+        });
+
+        const desc = document.getElementById('mainDesc').value;
+        const now  = new Date().toISOString();
+        const payload = {
+            fileURL: seleccionadas, tags: tagsRaw,
+            description: seleccionadas.map(() => desc),
+            timestamp: seleccionadas.map(() => now)
+        };
+
+        try {
+            const res = await fetch(
+                'https://api.github.com/repos/Gatosauriocrack/Oc.gatosauriocrackworl.com/dispatches',
+                {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ event_type: 'procesar_imagen', client_payload: { nuevoDibujo: payload } })
+                }
+            );
+            if (res.ok || res.status === 204) {
+                showToast('<i class="fa-solid fa-check-circle"></i> ¡Publicado!', 'ok');
+                setTimeout(() => location.reload(), 1600);
+            } else { throw new Error(`Status ${res.status}`); }
+        } catch(err) {
+            showToast(`<i class="fa-solid fa-times-circle"></i> Error: ${err.message}`, 'err', 4000);
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publicar ahora';
+            btn.disabled = false;
+        }
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>

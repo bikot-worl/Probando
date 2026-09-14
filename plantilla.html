@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista de Publicación</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --color-naranja-principal: #EA7900;
+            --color-naranja-claro: #ffb86c;
+            --color-naranja-fuerte: #CC6600;
+            --color-fondo: #282c34;
+            --color-texto: #e0e0e0;
+            --color-barra-principal: var(--color-naranja-principal);
+            --color-fondo-oscuro: var(--color-fondo);
+            --color-texto-principal: var(--color-texto);
+            --color-fondo-claro-menu: #333742;
+            --tag-oc: #EA7900;
+            --tag-artista: #dc3545;
+            --tag-colab: #28a745;
+            --tag-blue: #007bff;
+            --tag-autor: #FFD700;
+            --color-negro-oscuro: #000000;
+            --transition-fast: 0.18s ease;
+            --transition-mid: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --shadow-card: 0 4px 16px rgba(0,0,0,0.35);
+            --shadow-hover: 0 8px 28px rgba(0,0,0,0.5);
+            --glow-naranja: 0 0 18px rgba(234, 121, 0, 0.45);
+            --halftone-size: 8px;
+            --grad-start: -10%;
+            --grad-end: 85%;
+        }
+        @font-face {
+            font-family: 'Bikot';
+            src: url('https://bikotworl.com/fonts/Bikot.woff2') format('woff2'),
+                 url('https://bikotworl.com/fonts/Bikot.ttf') format('truetype'),
+                 url('https://bikotworl.com/fonts/Bikot.woff') format('woff'),
+                 url('https://bikotworl.com/fonts/Bikot.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        [class^="icon-"], [class*=" icon-"] {
+            font-family: 'Bikot' !important;
+            speak: never;
+            font-style: normal;
+            font-weight: normal;
+            font-variant: normal;
+            text-transform: none;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .icon-bikot:before, .icon-Bikot:before { content: "\e900"; }
+        .app-icon-custom .icon-color-negro { color: var(--color-negro-oscuro) !important; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--color-fondo-oscuro);
+            color: var(--color-texto-principal);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body.no-scroll { overflow: hidden; }
+        img {
+            -webkit-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
+            max-width: 100%;
+            height: auto;
+        }
+        .header-bar {
+            width: 100%;
+            height: 60px;
+            background-color: var(--color-barra-principal);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            position: fixed;
+            top: 0; 
+            left: 0;
+            z-index: 4000;
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            color: var(--color-texto);
+        }
+        .header-left { display: flex; align-items: center; gap: 12px; overflow: hidden; }
+        .header-icon {
+            font-size: 70px;
+            color: var(--color-negro-oscuro);
+            cursor: pointer;
+            pointer-events: auto;
+            transition: transform var(--transition-bounce);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header-icon:hover { transform: scale(1.1); }
+        .header-icon:active { transform: scale(0.95); }
+        .app-title {
+            font-weight: bold;
+            font-size: 2.3em;
+            color: #ffffff;
+            white-space: nowrap;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        @media (max-width: 768px) {
+            :root {
+                --halftone-size: 6px;
+                --grad-start: -30%;
+                --grad-end: 110%;
+            }
+        }
+        .header-bar::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            z-index: -1;
+            width: 100%;
+            background-image: 
+                radial-gradient(circle at center, #ffffff 0%, #000000 65%),
+                radial-gradient(circle at center, #ffffff 0%, #000000 65%),
+                linear-gradient(90deg, #ffffff var(--grad-start), #000000 var(--grad-end));
+            background-size: var(--halftone-size) var(--halftone-size), var(--halftone-size) var(--halftone-size), 100% 100%;
+            background-position: 0 0, calc(var(--halftone-size) / 2) calc(var(--halftone-size) / 2), 0 0;
+            background-blend-mode: screen, screen, multiply;
+            filter: contrast(18);
+            mix-blend-mode: multiply;
+        }
+        .main-content {
+            padding: 110px 20px 40px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: calc(100vh - 110px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .btn-volver-custom {
+            background-color: #EA7900;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            align-self: flex-start;
+            margin-bottom: 12px;
+            transition: transform var(--transition-bounce), background-color var(--transition-fast), box-shadow var(--transition-fast);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .btn-volver-custom:hover {
+            background-color: var(--color-naranja-fuerte);
+            box-shadow: var(--glow-naranja);
+            transform: translateY(-2px);
+        }
+        .btn-volver-custom:active { transform: scale(0.95); }
+        .view-container {
+            width: 100%;
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        .view-media { border-radius: 8px; overflow: visible; width: 100%; background: transparent; }
+        .carousel-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            width: 100%;
+            height: auto;
+            align-items: flex-start;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            cursor: grab;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.2);
+        }
+        .carousel-container:active { cursor: grabbing; }
+        .carousel-container::-webkit-scrollbar { display: none; }
+        .media-slide {
+            flex: 0 0 100%;
+            scroll-snap-align: center;
+            scroll-snap-stop: always;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: auto;
+            background: transparent;
+            min-height: 300px;
+        }
+        .media-slide img {
+            pointer-events: auto;
+            cursor: zoom-in;
+            width: auto;
+            height: auto;
+            max-width: 100%;
+            max-height: 75vh;
+            object-fit: contain;
+            display: block;
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+        .media-slide img.img-loaded { opacity: 1; }
+        .custom-video-player {
+            position: relative;
+            max-width: 100%;
+            max-height: 75vh;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .custom-video-player video {
+            width: 100%;
+            height: 100%;
+            max-height: 75vh;
+            object-fit: contain;
+            display: block;
+        }
+        .video-controls {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+            display: flex;
+            flex-direction: column;
+            padding: 10px 15px;
+            gap: 6px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .custom-video-player:hover .video-controls { opacity: 1; }
+        .video-progress-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+        .video-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--color-naranja-principal);
+            border-radius: 3px;
+            position: relative;
+        }
+        .video-controls-row { display: flex; align-items: center; justify-content: space-between; color: #fff; }
+        .video-controls-left, .video-controls-right { display: flex; align-items: center; gap: 12px; }
+        .video-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: color var(--transition-fast), transform var(--transition-fast);
+        }
+        .video-btn:hover { color: var(--color-naranja-claro); transform: scale(1.1); }
+        .video-time { font-size: 0.82rem; color: #ddd; }
+        .carousel-dots { display: flex; justify-content: center; gap: 8px; margin-top: 15px; height: 12px; }
+        .dot {
+            width: 10px; height: 10px;
+            background: #555;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all var(--transition-mid);
+        }
+        .dot:hover { background: var(--color-naranja-claro); transform: scale(1.2); }
+        .dot.active {
+            background: var(--color-naranja-principal);
+            transform: scale(1.3);
+            box-shadow: 0 0 6px rgba(234, 121, 0, 0.6);
+        }
+        .view-info {
+            background: var(--color-fondo-claro-menu);
+            padding: 24px;
+            border-radius: 12px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-card);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .view-timestamp {
+            color: var(--color-naranja-claro);
+            font-size: 0.88em;
+            font-weight: bold;
+            margin-bottom: 12px;
+            opacity: 0.95;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .view-description { color: #e0e0e0; font-size: 1.05rem; margin-bottom: 20px; line-height: 1.6; word-wrap: break-word; }
+        .mention-link { color: #4da3ff; text-decoration: none; font-weight: bold; transition: color 0.2s ease; }
+        .mention-link:hover { color: var(--color-naranja-claro); text-decoration: underline; }
+        .tag-list { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+        .tag-item {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.88em;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: transform var(--transition-bounce), box-shadow var(--transition-mid), filter var(--transition-fast);
+        }
+        .tag-item:hover {
+            transform: translateY(-2px) scale(1.05);
+            filter: brightness(1.15);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .tag-item:active { transform: scale(0.95); }
+        .tag-artist { background: var(--tag-artista); }
+        .tag-blue { background: var(--tag-blue); }
+        .tag-colab { background: var(--tag-colab); }
+        .tag-oc { background: var(--tag-oc); }
+        .tag-autor-principal {
+            background-color: var(--tag-autor);
+            color: #000 !important;
+            border: 2px solid var(--color-naranja-principal);
+            box-shadow: 0 0 8px rgba(255,215,0,0.4);
+        }
+        .share-button {
+            background: #2a2e37;
+            border: 1px solid var(--color-naranja-principal);
+            color: var(--color-texto);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: bold;
+            transition: background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-bounce);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            align-self: flex-start;
+        }
+        .share-button:hover {
+            background: var(--color-naranja-fuerte);
+            box-shadow: var(--glow-naranja);
+            transform: translateY(-2px);
+        }
+        .share-button:active { transform: scale(0.95); }
+        .share-toast {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e2128;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+            z-index: 6000;
+            transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid var(--color-naranja-claro);
+        }
+        .share-toast.show { bottom: 30px; }
+        .share-toast img { width: 42px; height: 42px; object-fit: cover; border-radius: 6px; }
+        #lightboxOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 8000;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-out;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        #lightboxOverlay.active { display: flex; }
+        #lightboxImg {
+            max-width: 92vw;
+            max-height: 92vh;
+            object-fit: contain;
+            border-radius: 6px;
+            animation: lightboxIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+            user-select: none;
+            -webkit-user-drag: none;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+            pointer-events: auto;
+        }
+        @keyframes lightboxIn {
+            from { opacity: 0; transform: scale(0.88); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .close-lightbox {
+            position: absolute;
+            top: 20px; right: 25px;
+            font-size: 2.2rem;
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+            line-height: 1;
+            transition: color var(--transition-fast), transform var(--transition-bounce);
+            background: none; border: none;
+            z-index: 8100;
+        }
+        .close-lightbox:hover { color: white; transform: scale(1.2) rotate(90deg); }
+        .lightbox-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(234,121,0,0.25);
+            border: 1px solid rgba(234,121,0,0.5);
+            color: white;
+            font-size: 1.5rem;
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background var(--transition-fast), transform var(--transition-bounce);
+            backdrop-filter: blur(4px);
+            z-index: 8100;
+        }
+        .lightbox-arrow:hover { background: rgba(234,121,0,0.7); transform: translateY(-50%) scale(1.12); }
+        .lightbox-arrow.prev { left: 20px; }
+        .lightbox-arrow.next { right: 20px; }
+        @media (min-width: 900px) {
+            .view-container { flex-direction: row; align-items: flex-start; }
+            .view-media { flex: 2; max-width: 68%; }
+            .view-info { flex: 1; min-width: 320px; position: sticky; top: 85px; }
+            .media-slide img, .media-slide .custom-video-player { max-height: 82vh; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header-bar">
+        <div class="header-content">
+            <div class="header-left">
+                <i class="icon-bikot header-icon" onclick="volverAlInicio()" title="Volver al inicio"></i>
+                <span class="app-title">Bikot</span>
+            </div>
+        </div>
+    </header>
+    <main id="view-screen" class="main-content">
+        <div class="view-container">
+            <div class="view-media">
+                <button class="btn-volver-custom" onclick="volverAlInicio()">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </button>
+                <div id="mediaSlider" class="carousel-container"></div>
+                <div id="carouselDots" class="carousel-dots"></div>
+            </div>
+            <div class="view-info">
+                <div id="viewTimestamp" class="view-timestamp">
+                    <i class="far fa-clock"></i> <span id="timestampText"></span>
+                </div>
+                <p id="viewDescription" class="view-description"></p>
+                <div id="viewTags" class="tag-list"></div>
+                <button class="share-button" onclick="shareCurrentMedia()">
+                    <i class="fas fa-share-alt"></i> Compartir
+                </button>
+            </div>
+        </div>
+    </main>
+    <div id="shareToast" class="share-toast">
+        <img id="toastImg" src="" alt="Vista previa" oncontextmenu="return false;">
+        <div class="toast-text"><strong>¡Enlace copiado al portapapeles!</strong></div>
+    </div>
+    <div id="lightboxOverlay">
+        <button class="close-lightbox" id="lightboxClose" aria-label="Cerrar">&times;</button>
+        <button class="lightbox-arrow prev" id="lightboxPrev" aria-label="Anterior"><i class="fas fa-chevron-left"></i></button>
+        <img id="lightboxImg" src="" alt="Vista ampliada" draggable="false">
+        <button class="lightbox-arrow next" id="lightboxNext" aria-label="Siguiente"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    <script>
+        function volverAlInicio() { window.location.href = '../index.html'; }
+        let mentionLinks = {};
+        const sampleItem = {
+            fileURL: [
+                "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1200&q=80"
+            ],
+            description: [
+                "Diseño conceptual final de Meli. Mencionando a @Bikot en la ilustración inicial del personaje.",
+                "Variación de pose y estudio de expresiones faciales para la paleta secundaria.",
+                "Boceto rápido preparado en colaboración con @Kitshifus."
+            ],
+            timestamp: [
+                "2026-03-12T14:30:00Z",
+                "2026-03-12T14:31:00Z",
+                "2026-03-12T14:32:00Z"
+            ],
+            tags: ["$Meli", "%digital", "OC_", "ilustration"]
+        };
+        let lightboxMediaList = [];
+        let lightboxIndex = 0;
+        function formatTimestamp(isoString) {
+            if (!isoString) return "";
+            const date = new Date(isoString);
+            const d = date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const t = date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true });
+            return `${d} • ${t}`;
+        }
+        function parseMentions(text) {
+            if (!text) return "";
+            return text.replace(/@[a-zA-Z0-9_]+/g, (match) => {
+                const searchKey = match.toLowerCase();
+                const key = Object.keys(mentionLinks).find(k => k.toLowerCase() === searchKey);
+                const link = key ? mentionLinks[key] : "#";
+                return `<a href="${link}" target="_blank" class="mention-link">${match}</a>`;
+            });
+        }
+        function crearTag(texto, contenedor) {
+            const span = document.createElement('span');
+            const cleanTag = texto.replace(/[%_$]/g, '');
+            let claseFinal;
+            if (texto === '+18' || texto.startsWith('%')) claseFinal = 'tag-artist';
+            else if (texto.startsWith('$')) claseFinal = 'tag-blue';
+            else if (texto.endsWith('_')) claseFinal = 'tag-colab';
+            else claseFinal = 'tag-oc';
+
+            span.className = `tag-item ${claseFinal}`;
+            span.innerText = cleanTag;
+            span.onclick = (e) => { 
+                e.stopPropagation(); 
+                window.location.href = `../index.html?search=${encodeURIComponent(cleanTag.toLowerCase())}`;
+            };
+            contenedor.appendChild(span);
+        }
+        function buildCustomVideoPlayer(url) {
+            const player = document.createElement('div');
+            player.className = 'custom-video-player';
+            const video = document.createElement('video');
+            video.src = url;
+            video.loop = true;
+            video.playsInline = true;
+
+            const controls = document.createElement('div');
+            controls.className = 'video-controls';
+
+            const progressContainer = document.createElement('div');
+            progressContainer.className = 'video-progress-container';
+            const progressBar = document.createElement('div');
+            progressBar.className = 'video-progress-bar';
+            progressContainer.appendChild(progressBar);
+
+            const controlsRow = document.createElement('div');
+            controlsRow.className = 'video-controls-row';
+            const leftControls = document.createElement('div');
+            leftControls.className = 'video-controls-left';
+
+            const playBtn = document.createElement('button');
+            playBtn.className = 'video-btn';
+            playBtn.innerHTML = '<i class="fas fa-play"></i>';
+
+            const muteBtn = document.createElement('button');
+            muteBtn.className = 'video-btn';
+            muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+
+            const timeDisplay = document.createElement('span');
+            timeDisplay.className = 'video-time';
+            timeDisplay.innerText = '0:00 / 0:00';
+
+            leftControls.appendChild(playBtn);
+            leftControls.appendChild(muteBtn);
+            leftControls.appendChild(timeDisplay);
+
+            const rightControls = document.createElement('div');
+            rightControls.className = 'video-controls-right';
+            const fsBtn = document.createElement('button');
+            fsBtn.className = 'video-btn';
+            fsBtn.innerHTML = '<i class="fas fa-expand"></i>';
+
+            rightControls.appendChild(fsBtn);
+            controlsRow.appendChild(leftControls);
+            controlsRow.appendChild(rightControls);
+
+            controls.appendChild(progressContainer);
+            controls.appendChild(controlsRow);
+            player.appendChild(video);
+            player.appendChild(controls);
+
+            const formatSecs = (s) => {
+                const mins = Math.floor(s / 60);
+                const secs = Math.floor(s % 60);
+                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            };
+            playBtn.onclick = (e) => {
+                e.stopPropagation();
+                if (video.paused) {
+                    video.play();
+                    playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                } else {
+                    video.pause();
+                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            };
+            muteBtn.onclick = (e) => {
+                e.stopPropagation();
+                video.muted = !video.muted;
+                muteBtn.innerHTML = video.muted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+            };
+            fsBtn.onclick = (e) => {
+                e.stopPropagation();
+                if (!document.fullscreenElement) {
+                    player.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            };
+            video.ontimeupdate = () => {
+                if (video.duration) {
+                    const pct = (video.currentTime / video.duration) * 100;
+                    progressBar.style.width = `${pct}%`;
+                    timeDisplay.innerText = `${formatSecs(video.currentTime)} / ${formatSecs(video.duration)}`;
+                }
+            };
+            progressContainer.onclick = (e) => {
+                e.stopPropagation();
+                const rect = progressContainer.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                video.currentTime = pos * video.duration;
+            };
+
+            return player;
+        }
+        function updateMediaDisplay(item, targetIdx = 0) {
+            const mediaSlider = document.getElementById('mediaSlider');
+            const dotsContainer = document.getElementById('carouselDots');
+            const tagsContainer = document.getElementById('viewTags');
+            const descText = document.getElementById('viewDescription');
+            const timeDisplay = document.getElementById('timestampText');
+
+            mediaSlider.innerHTML = '';
+            dotsContainer.innerHTML = '';
+            
+            const mediaList = item.fileURL;
+            const descList = item.description;
+            const timeList = item.timestamp;
+            const imageURLs = mediaList.filter(u => !u.match(/\.(mp4|webm|mov)$/i));
+
+            mediaList.forEach((url, idx) => {
+                const slide = document.createElement('div');
+                slide.className = 'media-slide';
+
+                const isVideo = url.match(/\.(mp4|webm|mov)$/i);
+                if (isVideo) {
+                    const player = buildCustomVideoPlayer(url);
+                    slide.appendChild(player);
+                } else {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    const personTag = item.tags ? item.tags.find(t => t.startsWith('$')) : null;
+                    const name = personTag ? personTag.replace('$', '') : 'Personaje';
+                    img.alt = `${name} - Dibujo por Bikot: ${descList[idx] || ''}`;
+                    
+                    img.onload = () => img.classList.add('img-loaded');
+                    if (img.complete) img.classList.add('img-loaded');
+
+                    img.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const imgIdx = imageURLs.indexOf(url);
+                        openLightbox(imageURLs, imgIdx >= 0 ? imgIdx : 0);
+                    });
+                    slide.appendChild(img);
+                }
+                
+                mediaSlider.appendChild(slide);
+
+                if (mediaList.length > 1) {
+                    const dot = document.createElement('div');
+                    dot.className = `dot ${idx === targetIdx ? 'active' : ''}`;
+                    dot.addEventListener('click', () => { 
+                        mediaSlider.scrollTo({ 
+                            left: mediaSlider.offsetWidth * idx, 
+                            behavior: 'smooth' 
+                        }); 
+                    });
+                    dotsContainer.appendChild(dot);
+                }
+            });
+
+            const updateUIForIndex = (index) => {
+                const currentDesc = descList[index] || descList[0] || "";
+                const currentTime = timeList[index] || timeList[0] || "";
+
+                if (descText) {
+                    descText.innerHTML = parseMentions(currentDesc);
+                    descText.style.display = currentDesc ? 'block' : 'none';
+                }
+                if (timeDisplay) {
+                    timeDisplay.innerText = formatTimestamp(currentTime);
+                }
+            };
+
+            setTimeout(() => {
+                const slideWidth = mediaSlider.offsetWidth;
+                if (slideWidth > 0) mediaSlider.scrollLeft = slideWidth * targetIdx;
+                updateUIForIndex(targetIdx);
+            }, 50);
+
+            mediaSlider.onscroll = () => {
+                const width = mediaSlider.offsetWidth;
+                if (width === 0) return;
+                const index = Math.round(mediaSlider.scrollLeft / width);
+                const dots = dotsContainer.querySelectorAll('.dot');
+                dots.forEach((d, i) => d.classList.toggle('active', i === index));
+                updateUIForIndex(index);
+            };
+
+            tagsContainer.innerHTML = '';
+            if (item.tags) {
+                item.tags.forEach(tag => crearTag(tag, tagsContainer));
+            }
+        }
+        function openLightbox(mediaList, startIndex) {
+            lightboxMediaList = mediaList.filter(u => !u.match(/\.(mp4|webm|mov)$/i));
+            lightboxIndex = Math.min(startIndex, lightboxMediaList.length - 1);
+            if (lightboxMediaList.length === 0) return;
+
+            setLightboxImage(lightboxIndex);
+            
+            const overlay = document.getElementById('lightboxOverlay');
+            overlay.classList.add('active');
+            document.body.classList.add('no-scroll');
+
+            const showArrows = lightboxMediaList.length > 1;
+            document.getElementById('lightboxPrev').style.display = showArrows ? 'flex' : 'none';
+            document.getElementById('lightboxNext').style.display = showArrows ? 'flex' : 'none';
+        }
+        function setLightboxImage(idx) {
+            const img = document.getElementById('lightboxImg');
+            if (!img) return;
+            img.style.opacity = '0';
+            img.style.transform = 'scale(0.93)';
+            img.src = lightboxMediaList[idx];
+            img.onload = () => {
+                img.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                img.style.opacity = '1';
+                img.style.transform = 'scale(1)';
+            };
+        }
+        function lightboxNav(direction) {
+            lightboxIndex = (lightboxIndex + direction + lightboxMediaList.length) % lightboxMediaList.length;
+            setLightboxImage(lightboxIndex);
+        }
+        function closeLightbox() {
+            const overlay = document.getElementById('lightboxOverlay');
+            if (!overlay) return;
+            overlay.classList.remove('active');
+            document.body.classList.remove('no-scroll');
+        }
+        async function shareCurrentMedia() {
+            const url = window.location.href;
+            const mediaSlider = document.getElementById('mediaSlider');
+            const width = mediaSlider.offsetWidth;
+            const index = Math.round(mediaSlider.scrollLeft / width);
+            const activeSlide = mediaSlider.querySelectorAll('.media-slide')[index];
+            const activeMedia = activeSlide ? activeSlide.querySelector('img, video') : null;
+
+            const toast = document.getElementById('shareToast');
+            const toastImg = document.getElementById('toastImg');
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(url);
+            } else {
+                const el = document.createElement('textarea');
+                el.value = url;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+            }
+
+            if (toastImg && activeMedia && activeMedia.tagName === 'IMG') {
+                toastImg.src = activeMedia.src;
+                toastImg.style.display = 'block';
+            } else {
+                toastImg.style.display = 'none';
+            }
+
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('../arroba.json')
+                .then(res => res.json())
+                .then(data => {
+                    mentionLinks = data;
+                    updateMediaDisplay(sampleItem);
+                })
+                .catch(err => {
+                    console.error('Error cargando arroba.json:', err);
+                    updateMediaDisplay(sampleItem);
+                });
+
+            const overlay = document.getElementById('lightboxOverlay');
+            overlay.addEventListener('click', (e) => { 
+                if (e.target === overlay) closeLightbox(); 
+            });
+
+            document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+            document.getElementById('lightboxPrev').addEventListener('click', (e) => { 
+                e.stopPropagation(); 
+                lightboxNav(-1); 
+            });
+            document.getElementById('lightboxNext').addEventListener('click', (e) => { 
+                e.stopPropagation(); 
+                lightboxNav(1); 
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (overlay.classList.contains('active')) {
+                    if (e.key === 'ArrowRight') lightboxNav(1);
+                    if (e.key === 'ArrowLeft') lightboxNav(-1);
+                    if (e.key === 'Escape') closeLightbox();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

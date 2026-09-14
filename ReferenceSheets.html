@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Gatosauriocrack">
+    <meta name="copyright" content="Gatosauriocrack 2026">
+    <meta name="description" content="Perfil oficial de los personajes originales de Gatosauriocrack.">
+    <title>Personajes-OC | Gatosauriocrack</title>
+    <link rel="icon" type="image/png" href="https://oc.gatosauriocrackworl.com/OC.png">
+    <link rel="apple-touch-icon" href="OC.png">
+    <meta property="og:image" content="https://oc.gatosauriocrackworl.com/OC.png">
+    <meta property="og:title" content="Perfil de Personajes">
+    <meta property="og:type" content="website">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --color-naranja-principal: #EA7900;
+            --color-naranja-claro: #ffb86c;
+            --color-naranja-fuerte: #CC6600;
+            --color-fondo: #282c34;
+            --color-negro-oscuro: #1a1d23;
+            --color-texto-blanco: #ffffff;
+        }
+        html { scroll-behavior: smooth; }
+        @font-face {
+            font-family: 'FontAwesome-Gatosauriocrack';
+            src:  url('fonts/FontAwesome-Gatosauriocrack.eot?ye7esj');
+            src:  url('fonts/FontAwesome-Gatosauriocrack.eot?ye7esj#iefix') format('embedded-opentype'),
+                url('fonts/FontAwesome-Gatosauriocrack.ttf?ye7esj') format('truetype'),
+                url('fonts/FontAwesome-Gatosauriocrack.woff?ye7esj') format('woff'),
+                url('fonts/FontAwesome-Gatosauriocrack.svg?ye7esj#FontAwesome-Gatosauriocrack') format('svg');
+            font-weight: normal; font-style: normal; font-display: block;
+        }
+        [class^="icon-"], [class*=" icon-"] {
+            font-family: 'FontAwesome-Gatosauriocrack' !important;
+            speak: never; font-style: normal; font-weight: normal; font-variant: normal;
+            text-transform: none; line-height: 1; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+        }
+        .icon-meli-icono:before { content: "\e900"; font-size: 80px !important; vertical-align: middle; }
+        .icon-Meli:before { content: "\e901"; font-size: 80px !important; vertical-align: middle; }
+        .icon-Ambar::before { content: "\e902"; font-size: 80px !important; vertical-align: middle; }
+        .icon-Melody:before { content: "\e903"; font-size: 80px !important; vertical-align: middle; }
+        .icon-Melissa:before { content: "\e904"; font-size: 80px !important; vertical-align: middle; }
+        .icon-Nelle:before { content: "\e905"; font-size: 80px !important; vertical-align: middle; }
+        .icon-Rayas:before { content: "\e90e"; font-size: 40px; vertical-align: middle; }
+        * { -webkit-user-select: none !important; user-select: none !important; -webkit-tap-highlight-color: transparent; box-sizing: border-box; outline: none; }
+        body { background-color: var(--color-fondo); color: #ccc; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; text-align: center; overflow-x: hidden; }
+        
+        #intro-iframe {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            border: none; z-index: 9999; transition: opacity 1s ease;
+        }
+
+        .character-section { position: relative; width: 100%; }
+        .character-nav {
+            position: sticky; top: 0; width: 100%; height: 60px;
+            display: flex; align-items: center; justify-content: flex-start;
+            padding: 0 20px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            background-color: rgba(234, 121, 0, 0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        }
+        .character-nav i { color: white; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+        .menu-btn { background: rgba(255,255,255,0.1); border: none; cursor: pointer; display: flex; align-items: center; margin-right: 15px; padding: 8px; border-radius: 12px; transition: 0.3s; }
+        .menu-btn:hover { background: rgba(255,255,255,0.2); }
+        .menu-btn i.icon-Rayas { color: var(--color-texto-blanco) !important; }
+        .sidenav {
+            height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; left: 0;
+            background-color: var(--color-negro-oscuro); overflow-x: hidden;
+            transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1); padding-top: 60px; box-shadow: 5px 0 30px rgba(0,0,0,0.7);
+        }
+        .sidenav.open a { opacity: 1; transform: translateX(0); }
+        .sidenav a {
+            padding: 15px 30px; text-decoration: none; display: flex; align-items: center; 
+            justify-content: flex-start; transition: 0.3s; color: #fff; opacity: 0; transform: translateX(-20px);
+        }
+        .sidenav a:hover { background-color: rgba(234, 121, 0, 0.15); padding-left: 45px; color: var(--color-naranja-claro); }
+        .sidenav a i { margin-right: 15px; width: 30px; text-align: center; }
+        .sidenav .close-btn { position: absolute; top: 10px; right: 20px; font-size: 2.5em; color: var(--color-naranja-principal); }
+        .overlay { display: none; position: fixed; width: 100%; height: 100%; top: 0; left: 0; background: rgba(0,0,0,0.8); z-index: 1500; backdrop-filter: blur(5px); }
+        .main-wrapper { max-width: 900px; margin: 0 auto; padding: 40px 20px 80px 20px; }
+        .main-img { width: 100%; max-width: 600px; height: auto; border-radius: 20px; filter: drop-shadow(0 10px 25px rgba(0,0,0,0.5)); display: block; margin: 0 auto; border: 2px solid var(--color-naranja-principal); transition: 0.4s; }
+        .block-separator { margin-bottom: 60px; text-align: center; background: rgba(255,255,255,0.04); padding: 30px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.05); }
+        .block-separator:hover .main-img { transform: scale(1.02); filter: drop-shadow(0 15px 35px rgba(234,121,0,0.3)); }
+        h2 { color: var(--color-naranja-claro); font-size: 1.8em; letter-spacing: 1px; margin-bottom: 25px; }
+        .btn-completa { display: inline-flex; align-items: center; gap: 10px; padding: 14px 30px; background-color: var(--color-naranja-principal); color: white; text-decoration: none; border-radius: 50px; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 1px solid var(--color-naranja-claro); margin-top: 20px; }
+        .btn-completa:hover { background-color: var(--color-naranja-fuerte); transform: translateY(-4px); box-shadow: 0 8px 25px rgba(234, 121, 0, 0.5); }
+        .copyright-footer { margin-top: 40px; font-size: 0.95em; color: #888; padding: 50px 0; border-top: 1px solid #333; background: #16191d; }
+        #scrollTop { position: fixed; bottom: 25px; right: 25px; background: var(--color-naranja-principal); color: white; width: 55px; height: 55px; border-radius: 50%; display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 999; box-shadow: 0 5px 15px rgba(0,0,0,0.4); transition: 0.3s; font-size: 1.2em; }
+    </style>
+</head>
+<body>
+
+    <iframe src="Animación/index.html" id="intro-iframe"></iframe>
+
+    <div id="overlay" class="overlay" onclick="closeNav()"></div>
+    <div id="scrollTop" onclick="window.scrollTo(0,0)"><i class="fas fa-arrow-up"></i></div>
+
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
+        <a href="#section-meli" onclick="closeNav()"><i class="icon-meli-icono"></i></a>
+        <a href="#section-ambar" onclick="closeNav()"><i class="icon-Ambar"></i></a>
+        <a href="#section-melody" onclick="closeNav()"><i class="icon-Melody"></i></a>
+        <a href="#section-melissa" onclick="closeNav()"><i class="icon-Melissa"></i></a>
+        <a href="#section-nelle" onclick="closeNav()"><i class="icon-Nelle"></i></a>
+        <a href="#section-lixie" onclick="closeNav()"><i class="fas fa-star"></i> Lixie</a>
+        <a href="#section-astrea" onclick="closeNav()"><i class="fas fa-star"></i> Astrea</a>
+        <a href="#section-gw" onclick="closeNav()"><i class="fas fa-star"></i> GW</a>
+        <a href="#section-mizzy" onclick="closeNav()"><i class="fas fa-star"></i> Mizzy</a>
+        <hr style="border-color: #333; margin: 20px 20px;">
+        <p style="padding: 0 30px; font-size: 0.8em; color: #555;">© Gatosauriocrackworld 2026</p>
+    </div>
+
+    <section class="character-section" id="section-meli">
+        <nav class="character-nav"><button class="menu-btn" onclick="openNav()"><i class="icon-Rayas"></i></button><i class="icon-Meli"></i></nav>
+        <div class="main-wrapper"><h2>Dibujando...</h2></div>
+    </section>
+    
+    <section class="character-section" id="section-ambar">
+        <nav class="character-nav"><button class="menu-btn" onclick="openNav()"><i class="icon-Rayas"></i></button><i class="icon-Ambar"></i></nav>
+        <div class="main-wrapper"><h2>Dibujando...</h2></div>
+    </section>
+    
+    <section class="character-section" id="section-melody">
+        <nav class="character-nav"><button class="menu-btn" onclick="openNav()"><i class="icon-Rayas"></i></button><i class="icon-Melody"></i></nav>
+        <div class="main-wrapper"><h2>Dibujando...</h2></div>
+    </section>
+    
+    <section class="character-section" id="section-melissa">
+        <nav class="character-nav"><button class="menu-btn" onclick="openNav()"><i class="icon-Rayas"></i></button><i class="icon-Melissa"></i></nav>
+        <div class="main-wrapper"><h2>Dibujando...</h2></div>
+    </section>
+    
+    <section class="character-section" id="section-nelle">
+        <nav class="character-nav"><button class="menu-btn" onclick="openNav()"><i class="icon-Rayas"></i></button><i class="icon-Nelle"></i></nav>
+        <div class="main-wrapper"><h2>Dibujando...</h2></div>
+    </section>
+    
+    <section class="character-section" id="section-lixie">
+        <nav class="character-nav"><button class="menu-btn" onclick="openNav()"><i class="icon-Rayas"></i></button><i class="fas fa-star"> Lixie</i></nav>
+        <div class="main-wrapper"><h2>Dibujando...</h2></div>
+    </section>
+    <section class="character-section" id="section-astrea">
+        <nav class="character-nav"><button class="menu-btn" onclick="openNav()"><i class="icon-Rayas"></i></button><i class="fas fa-star"> Astrea kot</i></nav>
+        <div class="main-wrapper"><h2>Dibujando...</h2></div>
+    </section>
+    
+    <section class="character-section" id="section-gw">
+        <nav class="character-nav"><button class="menu-btn" onclick="openNav()"><i class="icon-Rayas"></i></button><i class="fas fa-star"> GW</i></nav>
+        <div class="main-wrapper">
+             <div class="block-separator">
+                <img src="Imagenes/GW/gw_ReferenceSheet.png" class="main-img" alt="GW">
+             </div>
+             <div class="block-separator">
+                <img src="Imagenes/GW/gw_ReferenceSheetNude.png" class="main-img" alt="GW Nude">
+        </div>
+    </section>
+    
+    <section class="character-section" id="section-mizzy">
+        <nav class="character-nav"><button class="menu-btn" onclick="openNav()"><i class="icon-Rayas"></i></button><i class="fas fa-star"> Mizzy</i></nav>
+        <div class="main-wrapper">
+        	<div class="block-separator">
+                <img src="Imagenes/Mizzy/Mizzy_ReferenceSheetNude.png" class="main-img" alt="Mizzy">
+        </div>
+    </section>
+
+    <div class="copyright-footer">
+        Personaje y arte original por <strong>Gatosauriocrack</strong>.<br>
+        © 2022 - 2026 Todos los derechos reservados.
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const intro = document.getElementById('intro-iframe');
+            setTimeout(() => {
+                if (intro) {
+                    intro.style.opacity = '0';
+                    setTimeout(() => intro.remove(), 1000);
+                }
+            }, 5500);
+        });
+
+        function openNav() {
+            if (navigator.vibrate) navigator.vibrate(20);
+            const side = document.getElementById("mySidenav");
+            side.style.width = "280px";
+            side.classList.add("open");
+            document.getElementById("overlay").style.display = "block";
+        }
+        function closeNav() {
+            const side = document.getElementById("mySidenav");
+            side.style.width = "0";
+            side.classList.remove("open");
+            document.getElementById("overlay").style.display = "none";
+        }
+        window.onscroll = function() {
+            let topBtn = document.getElementById("scrollTop");
+            if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
+                topBtn.style.display = "flex";
+            } else {
+                topBtn.style.display = "none";
+            }
+        };
+        document.addEventListener('contextmenu', e => e.preventDefault());
+    </script>
+</body>
+</html>
