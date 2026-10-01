@@ -1,4 +1,4 @@
-const DATA_SOURCE = 'data/config/dibujos.json';
+const DATA_SOURCE = 'data/dibujos.json';
 const LINKS_SOURCE = 'data/config/arroba.json';
 const sidebar = document.getElementById("mySidebar");
 const menuOverlay = document.getElementById("menuOverlay");
@@ -294,7 +294,7 @@ function renderContentCard(item, index = 0) {
     
     const globalIndex = allContentData.findIndex(d => d.fileURL[0] === item.fileURL[0]);
     const numeroPublicacion = allContentData.length - globalIndex;
-    const targetUrl = `draw/publicacion_${numeroPublicacion}.html`;
+    const targetUrl = `posts/publicacion_${numeroPublicacion}.html`;
 
     const firstURL = item.fileURL[0];
     const isVideo = firstURL.match(/\.(mp4|webm|mov)$/i);
@@ -304,7 +304,7 @@ function renderContentCard(item, index = 0) {
     } else {
         const img = document.createElement('img');
         img.className = 'card-media';
-        img.src = firstURL;
+        img.src = firstURL.startsWith("../") ? firstURL.replace("../", "") : firstURL;
         img.decoding = 'async';
         
         if (index < 8) {
@@ -362,7 +362,7 @@ async function loadContent() {
         const rawData = await response.json();
         allContentData = rawData.filter(item => item && item.fileURL).map(item => ({
             ...item,
-            fileURL: (Array.isArray(item.fileURL) ? item.fileURL : [item.fileURL]).map(url => url.startsWith('../') ? url.replace('../', '') : url),
+            fileURL: Array.isArray(item.fileURL) ? item.fileURL : [item.fileURL],
             description: Array.isArray(item.description) ? item.description : [item.description],
             timestamp: Array.isArray(item.timestamp) ? item.timestamp : [item.timestamp]
         }));
