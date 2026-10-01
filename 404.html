@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Página no encontrada</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: #000000;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            padding-bottom: 80px;
+        }
+
+        img {
+            max-width: 90%;
+            max-height: 60vh;
+            object-fit: contain;
+            display: block;
+            margin: auto;
+        }
+
+        .btn-regreso {
+            position: absolute;
+            bottom: 30px;
+            color: #EA7900; 
+            text-decoration: none; 
+            font-family: Arial, sans-serif; 
+            font-size: 1.2rem; 
+            font-weight: bold;
+            transition: opacity 0.2s ease;
+        }
+
+        .btn-regreso:hover {
+            opacity: 0.8;
+        }
+        
+        .btn-regreso i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-content">
+        <img id="random-img" src="" alt="404" width="500" height="500">
+        
+        <a href="https://bikotworl.com" class="btn-regreso">
+            <i class="fas fa-arrow-left"></i>regresa a la Página Principal
+        </a>
+    </div>
+
+    <script>
+        const totalFotos = 7;
+        const numeroAleatorio = Math.floor(Math.random() * totalFotos) + 1;
+        
+        const urlImagen = `/assets/404/${numeroAleatorio}.webp`;
+        const imgElement = document.getElementById('random-img');
+
+        imgElement.src = urlImagen;
+
+        window.addEventListener('load', () => {
+            let siguienteNumero;
+            do {
+                siguienteNumero = Math.floor(Math.random() * totalFotos) + 1;
+            } while (siguienteNumero === numeroAleatorio && totalFotos > 1);
+
+            const siguienteUrl = `/assets/404/${siguienteNumero}.webp`;
+
+            const tempImg = new Image();
+            tempImg.src = siguienteUrl;
+        });
+    </script>
+
+</body>
+</html>
