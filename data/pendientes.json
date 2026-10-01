@@ -73,5 +73,65 @@
       "2026-10-01T18:08:54.779959Z"
     ],
     "status": "waiting"
+  },
+  {
+    "fileURL": [
+      "../gallery/Astrea/new furry  .png"
+    ],
+    "description": [
+      "Nueva imagen detectada"
+    ],
+    "tags": [
+      "%Bikot%"
+    ],
+    "timestamp": [
+      "2026-10-01T18:20:23.628318Z"
+    ],
+    "status": "waiting"
+  },
+  {
+    "fileURL": [
+      "../gallery/Astrea/Astrea kot.png"
+    ],
+    "description": [
+      "Nueva imagen detectada"
+    ],
+    "tags": [
+      "%Bikot%"
+    ],
+    "timestamp": [
+      "2026-10-01T18:20:23.628331Z"
+    ],
+    "status": "waiting"
+  },
+  {
+    "fileURL": [
+      "../gallery/Astrea/new furry.png"
+    ],
+    "description": [
+      "Nueva imagen detectada"
+    ],
+    "tags": [
+      "%Bikot%"
+    ],
+    "timestamp": [
+      "2026-10-01T18:20:23.628333Z"
+    ],
+    "status": "waiting"
+  },
+  {
+    "fileURL": [
+      "../gallery/Axie/Axie.jpg"
+    ],
+    "description": [
+      "Nueva imagen detectada"
+    ],
+    "tags": [
+      "%Bikot%"
+    ],
+    "timestamp": [
+      "2026-10-01T18:20:23.628598Z"
+    ],
+    "status": "waiting"
   }
 ]
