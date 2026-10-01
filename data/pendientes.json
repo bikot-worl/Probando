@@ -178,5 +178,20 @@
       "2026-10-01T20:04:37.893167Z"
     ],
     "status": "waiting"
+  },
+  {
+    "fileURL": [
+      "../gallery/images.png"
+    ],
+    "description": [
+      "Nueva imagen detectada"
+    ],
+    "tags": [
+      "%Bikot%"
+    ],
+    "timestamp": [
+      "2026-10-01T20:06:19.334561Z"
+    ],
+    "status": "waiting"
   }
 ]
