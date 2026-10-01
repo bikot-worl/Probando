@@ -569,8 +569,8 @@
         try {
             const [r1, r2, r3] = await Promise.all([
                 fetch('../data/pendientes.json').then(r => r.json()),
-                fetch('../data/NameOC.json').then(r => r.json()),
-                fetch('../data/arroba.json').then(r => r.json())
+                fetch('../data/config/NameOC.json').then(r => r.json()),
+                fetch('../data/config/arroba.json').then(r => r.json())
             ]);
             pendientesOriginales = r1;
             OCS = r2; ARROBAS = r3;
