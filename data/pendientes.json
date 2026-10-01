@@ -43,5 +43,20 @@
       "2026-10-01T18:07:41.749202Z"
     ],
     "status": "waiting"
+  },
+  {
+    "fileURL": [
+      "../gallery/Meli/Meli foto.png"
+    ],
+    "description": [
+      "Nueva imagen detectada"
+    ],
+    "tags": [
+      "%Bikot%"
+    ],
+    "timestamp": [
+      "2026-10-01T18:08:21.889756Z"
+    ],
+    "status": "waiting"
   }
 ]
