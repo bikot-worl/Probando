@@ -133,5 +133,50 @@
       "2026-10-01T18:20:23.628598Z"
     ],
     "status": "waiting"
+  },
+  {
+    "fileURL": [
+      "../gallery/Ambar/Ambar_nude.png"
+    ],
+    "description": [
+      "Nueva imagen detectada"
+    ],
+    "tags": [
+      "%Bikot%"
+    ],
+    "timestamp": [
+      "2026-10-01T18:22:39.791398Z"
+    ],
+    "status": "waiting"
+  },
+  {
+    "fileURL": [
+      "../gallery/Ambar/Ambar_Traje.png"
+    ],
+    "description": [
+      "Nueva imagen detectada"
+    ],
+    "tags": [
+      "%Bikot%"
+    ],
+    "timestamp": [
+      "2026-10-01T18:22:39.791408Z"
+    ],
+    "status": "waiting"
+  },
+  {
+    "fileURL": [
+      "../gallery/Aslan/Screenshot_20260327_200300.jpg"
+    ],
+    "description": [
+      "Nueva imagen detectada"
+    ],
+    "tags": [
+      "%Bikot%"
+    ],
+    "timestamp": [
+      "2026-10-01T18:22:39.791501Z"
+    ],
+    "status": "waiting"
   }
 ]
