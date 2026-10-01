@@ -1,5 +1,5 @@
-const DATA_SOURCE = 'jsons/dibujos.json';
-const LINKS_SOURCE = 'jsons/arroba.json';
+const DATA_SOURCE = 'data\configdibujos.json';
+const LINKS_SOURCE = 'data\config/arroba.json';
 const sidebar = document.getElementById("mySidebar");
 const menuOverlay = document.getElementById("menuOverlay");
 const views = document.querySelectorAll('.main-content');
