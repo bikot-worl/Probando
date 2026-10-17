@@ -550,6 +550,12 @@
     let currentListArr = [], currentListCss = '', tempCss = '';
     let pendientesOriginales = [];
 
+    function normalizarRuta(rawUrl) {
+        if (!rawUrl) return '';
+        let urlLimpia = rawUrl.replace(/^(\.\.\/|\.\/)+/, '');
+        return encodeURI(urlLimpia);
+    }
+
     function showToast(html, type = '', duration = 2800) {
         const t = document.getElementById('toast');
         t.innerHTML = html;
@@ -576,6 +582,7 @@
             OCS = r2; ARROBAS = r3;
             renderGrid(r1);
         } catch(e) {
+            console.error("Error exacto al cargar los datos:", e);
             document.getElementById('pendingGrid').innerHTML =
                 '<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i>Error al cargar.</div>';
         }
@@ -589,14 +596,15 @@
             return;
         }
         items.forEach(p => {
-            const url = Array.isArray(p.fileURL) ? p.fileURL[0] : p.fileURL;
+            const rawUrl = Array.isArray(p.fileURL) ? p.fileURL[0] : p.fileURL;
+            const url = normalizarRuta(rawUrl);
             const div = document.createElement('div');
             div.className = 'img-option';
             div.innerHTML = (isVideo(url)
                 ? `<video src="${url}" muted preload="metadata"></video>`
-                : `<img src="${url}" loading="lazy">`)
+                : `<img src="${url}" loading="lazy" onerror="console.error('Error cargando imagen:', this.src)">`)
                 + `<div class="check-badge"><i class="fa-solid fa-check"></i></div>`;
-            div.onclick = () => toggleSelect(div, url);
+            div.onclick = () => toggleSelect(div, rawUrl);
             grid.appendChild(div);
         });
     }
@@ -772,7 +780,8 @@
     }
 
     function updatePreview() {
-        const url = seleccionadas[carIndex];
+        const rawUrl = seleccionadas[carIndex];
+        const url = normalizarRuta(rawUrl);
         const box = document.getElementById('mediaPreview');
         box.innerHTML = isVideo(url)
             ? `<video src="${url}" autoplay loop muted playsinline></video>`
@@ -841,8 +850,11 @@
             if (res.ok || res.status === 204) {
                 showToast('<i class="fa-solid fa-check-circle"></i> ¡Publicado!', 'ok');
                 setTimeout(() => location.reload(), 1600);
-            } else { throw new Error(`Status ${res.status}`); }
+            } else { 
+                throw new Error(`Status ${res.status}: ${res.statusText}`); 
+            }
         } catch(err) {
+            console.error("Error exacto al publicar:", err);
             showToast(`<i class="fa-solid fa-times-circle"></i> Error: ${err.message}`, 'err', 4000);
             btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publicar ahora';
             btn.disabled = false;
