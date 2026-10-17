@@ -815,9 +815,11 @@
     function isVideo(url) { return /\.(mp4|webm)$/i.test(url); }
 
     async function publicar() {
-        const token = localStorage.getItem('github_token') || prompt('GitHub Token:');
-        if (!token) return;
-        localStorage.setItem('github_token', token);
+        let token = localStorage.getItem('github_token');
+        if (!token) {
+            token = prompt('Introduce tu GitHub Token:');
+            if (!token) return;
+        }
 
         const btn = document.getElementById('btnPublicar');
         btn.innerHTML = '<span class="spinner"></span> Publicando...';
@@ -847,7 +849,15 @@
                     body: JSON.stringify({ event_type: 'procesar_imagen', client_payload: { nuevoDibujo: payload } })
                 }
             );
+
+            // Si el token es inválido (401 o 403), borramos el token guardado y pedimos uno nuevo
+            if (res.status === 401 || res.status === 403) {
+                localStorage.removeItem('github_token');
+                throw new Error("Token de GitHub inválido o expirado. Vuelve a intentarlo.");
+            }
+
             if (res.ok || res.status === 204) {
+                localStorage.setItem('github_token', token); // Guardar solo si es válido
                 showToast('<i class="fa-solid fa-check-circle"></i> ¡Publicado!', 'ok');
                 setTimeout(() => location.reload(), 1600);
             } else { 
@@ -855,7 +865,7 @@
             }
         } catch(err) {
             console.error("Error exacto al publicar:", err);
-            showToast(`<i class="fa-solid fa-times-circle"></i> Error: ${err.message}`, 'err', 4000);
+            showToast(`<i class="fa-solid fa-times-circle"></i> ${err.message}`, 'err', 4000);
             btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publicar ahora';
             btn.disabled = false;
         }
