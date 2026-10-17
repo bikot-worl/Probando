@@ -193,5 +193,20 @@
       "2026-10-01T20:06:19.334561Z"
     ],
     "status": "waiting"
+  },
+  {
+    "fileURL": [
+      "../gallery/Nyx/104 sin título2_20261016172635.png"
+    ],
+    "description": [
+      "Nueva imagen detectada"
+    ],
+    "tags": [
+      "%Bikot%"
+    ],
+    "timestamp": [
+      "2026-10-17T00:50:37.094159Z"
+    ],
+    "status": "waiting"
   }
 ]
