@@ -4,9 +4,9 @@ import re
 import shutil
 
 def generar_paginas_dibujos():
-    html_template_path = 'plantilla.html'
-    json_path = 'dibujos.json'
-    output_dir = 'draw'
+    html_template_path = 'data/system/plantilla.html'
+    json_path = 'data/dibujos.json'
+    output_dir = 'posts'
 
     if not os.path.exists(html_template_path):
         print(f"Error: No se encontró el archivo '{html_template_path}'.")
@@ -17,7 +17,10 @@ def generar_paginas_dibujos():
         return
 
     if os.path.exists(output_dir):
-        shutil.rmtree(output_dir)
+        for file in os.listdir(output_dir):
+            if file.startswith("publicacion_") and file.endswith(".html"):
+                os.remove(os.path.join(output_dir, file))
+    
     os.makedirs(output_dir, exist_ok=True)
 
     with open(html_template_path, 'r', encoding='utf-8') as f:
