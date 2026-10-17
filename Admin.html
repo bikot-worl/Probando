@@ -850,14 +850,13 @@
                 }
             );
 
-            // Si el token es inválido (401 o 403), borramos el token guardado y pedimos uno nuevo
             if (res.status === 401 || res.status === 403) {
                 localStorage.removeItem('github_token');
                 throw new Error("Token de GitHub inválido o expirado. Vuelve a intentarlo.");
             }
 
             if (res.ok || res.status === 204) {
-                localStorage.setItem('github_token', token); // Guardar solo si es válido
+                localStorage.setItem('github_token', token);
                 showToast('<i class="fa-solid fa-check-circle"></i> ¡Publicado!', 'ok');
                 setTimeout(() => location.reload(), 1600);
             } else { 
