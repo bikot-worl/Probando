@@ -1,0 +1,46 @@
+name: Actualizar Sitemap
+
+on:
+  workflow_run:
+    workflows: ["Final"]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  generar-sitemap:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Descargar últimos cambios
+        run: |
+          git pull origin main
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Ejecutar script de sitemap
+        run: python sitemap.py
+
+      - name: Hacer commit y push del sitemap actualizado
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add sitemap.xml
+          if git diff --staged --quiet; then
+            echo "No hay cambios en el sitemap."
+          else
+            git commit -m "bot: Actualización automática del sitemap.xml"
+            git push
+          fi
