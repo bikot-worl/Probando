@@ -18,6 +18,12 @@ jobs:
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Descargar últimos cambios del repositorio
+        run: |
+          git pull origin main
 
       - name: Configurar Python
         uses: actions/setup-python@v5
